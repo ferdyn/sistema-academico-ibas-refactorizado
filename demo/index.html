@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBAS - Sistema Académico (Demo Online)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div id="app">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-graduation-cap text-2xl"></i>
+                        <h1 class="text-xl font-bold">Sistema Académico IBAS</h1>
+                        <span class="bg-green-500 text-xs px-2 py-1 rounded-full">DEMO ONLINE</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span v-if="currentUser" class="text-sm">
+                            <i class="fas fa-user"></i> {{ currentUser.nombre }} ({{ currentUser.rol }})
+                        </span>
+                        <button v-if="currentUser" @click="logout" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Login Screen -->
+        <div v-if="!currentUser" class="min-h-screen flex items-center justify-center">
+            <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <div class="text-center mb-6">
+                    <i class="fas fa-graduation-cap text-4xl text-blue-600 mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Iniciar Sesión</h2>
+                    <p class="text-gray-600">Demo del Sistema Académico IBAS</p>
+                </div>
+
+                <form @submit.prevent="login" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Usuario de Demostración:</label>
+                        <select v-model="selectedUser" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Selecciona un usuario...</option>
+                            <option v-for="user in demoUsers" :key="user.email" :value="user">
+                                {{ user.nombre }} - {{ user.rol }} ({{ user.email }})
+                            </option>
+                        </select>
+                    </div>
+
+                    <button type="submit" :disabled="!selectedUser" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Ingresar al Demo
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-gray-600">
+                    <p class="mb-2"><strong>Este es un demo completamente funcional</strong></p>
+                    <p>✅ Frontend refactorizado con componentes modernos</p>
+                    <p>✅ Datos realistas de prueba</p>
+                    <p>✅ Funcionalidades por rol</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div v-if="currentUser" class="container mx-auto px-4 py-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div v-for="stat in dashboardStats" :key="stat.title" 
+                     class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">{{ stat.title }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stat.value }}</p>
+                        </div>
+                        <div :class="['text-2xl', stat.color]">
+                            <i :class="stat.icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8 px-6">
+                        <button v-for="tab in availableTabs" :key="tab.id"
+                                @click="activeTab = tab.id"
+                                :class="['py-4 px-2 border-b-2 font-medium text-sm transition-colors',
+                                        activeTab === tab.id 
+                                            ? 'border-blue-500 text-blue-600' 
+                                            : 'border-transparent text-gray-500 hover:text-gray-700']">
+                            <i :class="tab.icon + ' mr-2'"></i>{{ tab.name }}
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Dashboard Tab -->
+                    <div v-if="activeTab === 'dashboard'">
+                        <h3 class="text-lg font-semibold mb-4">Dashboard Personal</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Actividades Recientes -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-800 mb-3">
+                                    <i class="fas fa-clock text-blue-500 mr-2"></i>Actividades Recientes
+                                </h4>
+                                <div class="space-y-2">
+                                    <div v-for="activity in recentActivities" :key="activity.id" 
+                                         class="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                        <span class="text-sm text-gray-700">{{ activity.description }}</span>
+                                        <span class="text-xs text-gray-500">{{ activity.time }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notificaciones -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-800 mb-3">
+                                    <i class="fas fa-bell text-yellow-500 mr-2"></i>Notificaciones
+                                </h4>
+                                <div class="space-y-2">
+                                    <div v-for="notification in notifications" :key="notification.id" 
+                                         class="p-3 rounded border-l-4 border-blue-400 bg-blue-50">
+                                        <p class="text-sm font-medium text-blue-800">{{ notification.title }}</p>
+                                        <p class="text-xs text-blue-600">{{ notification.message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cursos Tab -->
+                    <div v-if="activeTab === 'cursos'">
+                        <h3 class="text-lg font-semibold mb-4">
+                            {{ currentUser.rol === 'alumno' ? 'Mis Cursos' : 'Cursos que Imparto' }}
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div v-for="curso in userCourses" :key="curso.id" 
+                                 class="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                                 @click="selectCourse(curso)">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-800">{{ curso.materia }}</h4>
+                                    <span :class="['px-2 py-1 rounded-full text-xs', 
+                                                  curso.activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800']">
+                                        {{ curso.activo ? 'Activo' : 'Finalizado' }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">{{ curso.descripcion }}</p>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span><i class="fas fa-users mr-1"></i>{{ curso.estudiantes || 0 }} estudiantes</span>
+                                    <span><i class="fas fa-calendar mr-1"></i>{{ curso.periodo }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tareas Tab -->
+                    <div v-if="activeTab === 'tareas'">
+                        <h3 class="text-lg font-semibold mb-4">
+                            {{ currentUser.rol === 'alumno' ? 'Mis Tareas' : 'Tareas Asignadas' }}
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border border-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tarea</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Materia</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Fecha Entrega</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                        <th v-if="currentUser.rol === 'alumno'" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Calificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr v-for="tarea in userTasks" :key="tarea.id" class="hover:bg-gray-50">
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ tarea.titulo }}</td>
+                                        <td class="px-4 py-2 text-sm text-gray-600">{{ tarea.materia }}</td>
+                                        <td class="px-4 py-2 text-sm text-gray-600">{{ formatDate(tarea.fechaVencimiento) }}</td>
+                                        <td class="px-4 py-2">
+                                            <span :class="['px-2 py-1 rounded-full text-xs', getTaskStatusClass(tarea.estado)]">
+                                                {{ tarea.estado }}
+                                            </span>
+                                        </td>
+                                        <td v-if="currentUser.rol === 'alumno'" class="px-4 py-2 text-sm text-gray-600">
+                                            {{ tarea.calificacion ? tarea.calificacion + '/100' : 'Pendiente' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Usuarios Tab (Solo Admin) -->
+                    <div v-if="activeTab === 'usuarios' && currentUser.rol === 'administrador'">
+                        <h3 class="text-lg font-semibold mb-4">Gestión de Usuarios</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border border-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Último Acceso</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr v-for="user in allUsers" :key="user.id" class="hover:bg-gray-50">
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ user.nombre }}</td>
+                                        <td class="px-4 py-2 text-sm text-gray-600">{{ user.email }}</td>
+                                        <td class="px-4 py-2">
+                                            <span :class="['px-2 py-1 rounded-full text-xs', getRoleClass(user.rol)]">
+                                                {{ user.rol }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            <span :class="['px-2 py-1 rounded-full text-xs', 
+                                                          user.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']">
+                                                {{ user.activo ? 'Activo' : 'Inactivo' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 text-sm text-gray-600">{{ formatDate(user.ultimoAcceso) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer v-if="currentUser" class="bg-gray-800 text-white py-8">
+            <div class="container mx-auto px-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+                    <h3 class="text-lg font-semibold">Sistema Académico IBAS</h3>
+                    <p class="text-gray-400">Demo Online - Frontend Refactorizado</p>
+                </div>
+                <div class="flex flex-wrap justify-center items-center space-x-6 text-sm text-gray-400">
+                    <span>✅ Componentes Reutilizables</span>
+                    <span>✅ Hooks Optimizados</span>
+                    <span>✅ Sistema de Rutas Mejorado</span>
+                    <span>✅ Responsive Design</span>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <p>Este es un demo funcional del sistema refactorizado</p>
+                    <p>Todos los datos mostrados son de prueba</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentUser: null,
+                    selectedUser: null,
+                    activeTab: 'dashboard',
+                    
+                    // Usuarios de demostración
+                    demoUsers: [
+                        {
+                            id: 1,
+                            nombre: 'Ana Rodríguez',
+                            email: 'admin@ibas.edu',
+                            rol: 'administrador',
+                            activo: true,
+                            ultimoAcceso: new Date()
+                        },
+                        {
+                            id: 2,
+                            nombre: 'José Sánchez',
+                            email: 'jsanchez@ibas.edu',
+                            rol: 'maestro',
+                            activo: true,
+                            ultimoAcceso: new Date()
+                        },
+                        {
+                            id: 3,
+                            nombre: 'Pedro García',
+                            email: 'pedro.garcia@estudiante.ibas.edu',
+                            rol: 'alumno',
+                            activo: true,
+                            ultimoAcceso: new Date()
+                        }
+                    ],
+
+                    // Datos de prueba
+                    mockData: {
+                        cursos: [
+                            { id: 1, materia: 'Matemáticas Avanzadas', descripcion: 'Cálculo diferencial e integral', activo: true, estudiantes: 25, periodo: '2024-1', maestroId: 2 },
+                            { id: 2, materia: 'Programación Web', descripcion: 'Desarrollo con React y Node.js', activo: true, estudiantes: 30, periodo: '2024-1', maestroId: 2 },
+                            { id: 3, materia: 'Base de Datos', descripcion: 'Diseño y administración de BD', activo: true, estudiantes: 20, periodo: '2024-1', maestroId: 2 }
+                        ],
+                        
+                        tareas: [
+                            { id: 1, titulo: 'Derivadas e Integrales', materia: 'Matemáticas Avanzadas', fechaVencimiento: new Date(Date.now() + 7*24*60*60*1000), estado: 'Pendiente', calificacion: null, estudianteId: 3 },
+                            { id: 2, titulo: 'Proyecto React', materia: 'Programación Web', fechaVencimiento: new Date(Date.now() + 3*24*60*60*1000), estado: 'En Progreso', calificacion: null, estudianteId: 3 },
+                            { id: 3, titulo: 'Diseño ER', materia: 'Base de Datos', fechaVencimiento: new Date(Date.now() - 2*24*60*60*1000), estado: 'Entregada', calificacion: 85, estudianteId: 3 }
+                        ],
+
+                        actividades: [
+                            { id: 1, description: 'Nueva tarea asignada en Matemáticas', time: 'Hace 2 horas' },
+                            { id: 2, description: 'Calificación recibida en Base de Datos', time: 'Hace 1 día' },
+                            { id: 3, description: 'Nuevo anuncio del curso', time: 'Hace 2 días' }
+                        ],
+
+                        notificaciones: [
+                            { id: 1, title: 'Tarea por vencer', message: 'Proyecto React vence en 3 días' },
+                            { id: 2, title: 'Nueva calificación', message: 'Calificación disponible en Base de Datos' }
+                        ]
+                    }
+                }
+            },
+
+            computed: {
+                availableTabs() {
+                    const baseTabs = [
+                        { id: 'dashboard', name: 'Dashboard', icon: 'fas fa-tachometer-alt' },
+                        { id: 'cursos', name: 'Cursos', icon: 'fas fa-book' },
+                        { id: 'tareas', name: 'Tareas', icon: 'fas fa-tasks' }
+                    ];
+
+                    if (this.currentUser?.rol === 'administrador') {
+                        baseTabs.push({ id: 'usuarios', name: 'Usuarios', icon: 'fas fa-users' });
+                    }
+
+                    return baseTabs;
+                },
+
+                dashboardStats() {
+                    if (!this.currentUser) return [];
+
+                    if (this.currentUser.rol === 'administrador') {
+                        return [
+                            { title: 'Total Usuarios', value: this.demoUsers.length, icon: 'fas fa-users', color: 'text-blue-500' },
+                            { title: 'Cursos Activos', value: this.mockData.cursos.length, icon: 'fas fa-book', color: 'text-green-500' },
+                            { title: 'Tareas Pendientes', value: this.mockData.tareas.filter(t => t.estado === 'Pendiente').length, icon: 'fas fa-tasks', color: 'text-yellow-500' },
+                            { title: 'Actividad Hoy', value: '12', icon: 'fas fa-chart-line', color: 'text-purple-500' }
+                        ];
+                    } else if (this.currentUser.rol === 'maestro') {
+                        return [
+                            { title: 'Mis Cursos', value: this.userCourses.length, icon: 'fas fa-chalkboard-teacher', color: 'text-blue-500' },
+                            { title: 'Estudiantes', value: this.userCourses.reduce((sum, curso) => sum + curso.estudiantes, 0), icon: 'fas fa-user-graduate', color: 'text-green-500' },
+                            { title: 'Tareas Asignadas', value: this.userTasks.length, icon: 'fas fa-clipboard-list', color: 'text-yellow-500' },
+                            { title: 'Por Calificar', value: this.userTasks.filter(t => t.estado === 'Entregada' && !t.calificacion).length, icon: 'fas fa-edit', color: 'text-red-500' }
+                        ];
+                    } else {
+                        return [
+                            { title: 'Mis Cursos', value: this.userCourses.length, icon: 'fas fa-book-open', color: 'text-blue-500' },
+                            { title: 'Tareas Pendientes', value: this.userTasks.filter(t => t.estado === 'Pendiente').length, icon: 'fas fa-clock', color: 'text-yellow-500' },
+                            { title: 'Tareas Completadas', value: this.userTasks.filter(t => t.estado === 'Entregada').length, icon: 'fas fa-check-circle', color: 'text-green-500' },
+                            { title: 'Promedio', value: '85%', icon: 'fas fa-chart-pie', color: 'text-purple-500' }
+                        ];
+                    }
+                },
+
+                userCourses() {
+                    if (!this.currentUser) return [];
+                    
+                    if (this.currentUser.rol === 'maestro') {
+                        return this.mockData.cursos.filter(curso => curso.maestroId === this.currentUser.id);
+                    } else if (this.currentUser.rol === 'alumno') {
+                        return this.mockData.cursos; // En un caso real, sería solo los cursos inscritos
+                    }
+                    
+                    return this.mockData.cursos;
+                },
+
+                userTasks() {
+                    if (!this.currentUser) return [];
+                    
+                    if (this.currentUser.rol === 'alumno') {
+                        return this.mockData.tareas.filter(tarea => tarea.estudianteId === this.currentUser.id);
+                    } else if (this.currentUser.rol === 'maestro') {
+                        return this.mockData.tareas; // En un caso real, sería solo las tareas de sus cursos
+                    }
+                    
+                    return this.mockData.tareas;
+                },
+
+                recentActivities() {
+                    return this.mockData.actividades;
+                },
+
+                notifications() {
+                    return this.mockData.notificaciones;
+                },
+
+                allUsers() {
+                    return this.demoUsers;
+                }
+            },
+
+            methods: {
+                login() {
+                    if (this.selectedUser) {
+                        this.currentUser = { ...this.selectedUser };
+                        this.selectedUser = null;
+                        
+                        // Simular notificación de login exitoso
+                        this.showNotification('Login exitoso', `Bienvenido ${this.currentUser.nombre}`, 'success');
+                    }
+                },
+
+                logout() {
+                    this.currentUser = null;
+                    this.activeTab = 'dashboard';
+                    this.showNotification('Sesión cerrada', 'Has cerrado sesión exitosamente', 'info');
+                },
+
+                selectCourse(curso) {
+                    this.showNotification('Curso seleccionado', `Abriendo ${curso.materia}`, 'info');
+                },
+
+                formatDate(date) {
+                    if (!date) return 'N/A';
+                    return new Date(date).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                },
+
+                getTaskStatusClass(estado) {
+                    const classes = {
+                        'Pendiente': 'bg-yellow-100 text-yellow-800',
+                        'En Progreso': 'bg-blue-100 text-blue-800',
+                        'Entregada': 'bg-green-100 text-green-800',
+                        'Vencida': 'bg-red-100 text-red-800'
+                    };
+                    return classes[estado] || 'bg-gray-100 text-gray-800';
+                },
+
+                getRoleClass(rol) {
+                    const classes = {
+                        'administrador': 'bg-purple-100 text-purple-800',
+                        'maestro': 'bg-blue-100 text-blue-800',
+                        'alumno': 'bg-green-100 text-green-800'
+                    };
+                    return classes[rol] || 'bg-gray-100 text-gray-800';
+                },
+
+                showNotification(title, message, type = 'info') {
+                    // En una implementación real, esto mostraría una notificación toast
+                    console.log(`${type.toUpperCase()}: ${title} - ${message}`);
+                }
+            },
+
+            mounted() {
+                // Simular datos cargados
+                console.log('Demo IBAS cargado exitosamente');
+                console.log('Frontend refactorizado con componentes modernos');
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

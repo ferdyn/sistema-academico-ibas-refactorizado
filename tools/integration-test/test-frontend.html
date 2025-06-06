@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Integración Frontend-Backend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-bold text-center mb-8">🧪 Test de Integración IBAS</h1>
+        
+        <!-- Status del Backend -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">🔧 Estado del Backend</h2>
+            <div id="backend-status" class="p-4 rounded border">
+                <div class="animate-pulse">Verificando backend...</div>
+            </div>
+        </div>
+
+        <!-- Test de Login -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">🔐 Test de Autenticación</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Usuario de Prueba:</label>
+                    <select id="test-user" class="w-full p-2 border rounded">
+                        <option value="admin@ibas.edu|admin123">Admin - admin@ibas.edu</option>
+                        <option value="jsanchez@ibas.edu|maestro123">Maestro - jsanchez@ibas.edu</option>
+                        <option value="pedro.garcia@estudiante.ibas.edu|alumno123">Alumno - pedro.garcia@estudiante.ibas.edu</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button id="test-login" class="w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+                        Probar Login
+                    </button>
+                </div>
+                <div class="flex items-end">
+                    <button id="test-logout" class="w-full bg-red-500 hover:bg-red-600 text-white p-2 rounded" disabled>
+                        Logout
+                    </button>
+                </div>
+            </div>
+            <div id="auth-result" class="p-4 rounded border bg-gray-50">
+                Selecciona un usuario y haz clic en "Probar Login"
+            </div>
+        </div>
+
+        <!-- Test de API -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">📊 Test de API</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                <button id="test-users" class="bg-green-500 hover:bg-green-600 text-white p-2 rounded text-sm">
+                    GET /users
+                </button>
+                <button id="test-courses" class="bg-green-500 hover:bg-green-600 text-white p-2 rounded text-sm">
+                    GET /cursos
+                </button>
+                <button id="test-materias" class="bg-green-500 hover:bg-green-600 text-white p-2 rounded text-sm">
+                    GET /materias
+                </button>
+                <button id="test-profile" class="bg-green-500 hover:bg-green-600 text-white p-2 rounded text-sm">
+                    GET /auth/me
+                </button>
+            </div>
+            <div id="api-result" class="p-4 rounded border bg-gray-50 max-h-64 overflow-y-auto">
+                Los endpoints se probarán después del login exitoso
+            </div>
+        </div>
+
+        <!-- Configuración CORS -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">🌐 Test de CORS</h2>
+            <div id="cors-result" class="p-4 rounded border bg-gray-50">
+                <div class="animate-pulse">Verificando configuración CORS...</div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">📝 Logs de Integración</h2>
+            <div id="integration-logs" class="p-4 rounded border bg-black text-green-400 font-mono text-sm max-h-48 overflow-y-auto">
+                🚀 Iniciando tests de integración...<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/v1';
+        let authToken = null;
+        let currentUser = null;
+
+        // Función para log
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('integration-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-blue-400';
+            logs.innerHTML += `<span class="${color}">[${timestamp}] ${message}</span><br>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Test del estado del backend
+        async function testBackendStatus() {
+            addLog('🔍 Verificando estado del backend...');
+            const statusDiv = document.getElementById('backend-status');
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = `
+                        <div class="text-green-600">
+                            ✅ Backend Online<br>
+                            <small>Versión: ${data.version || 'N/A'} | DB: ${data.database || 'Connected'}</small>
+                        </div>
+                    `;
+                    addLog('✅ Backend respondiendo correctamente', 'success');
+                    testCORS();
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="text-red-600">
+                        ❌ Backend Offline<br>
+                        <small>Error: ${error.message}</small><br>
+                        <small class="text-gray-600">Asegúrate de que el backend esté corriendo en puerto 5000</small>
+                    </div>
+                `;
+                addLog(`❌ Error conectando al backend: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // Test de CORS
+        async function testCORS() {
+            addLog('🌐 Verificando configuración CORS...');
+            const corsDiv = document.getElementById('cors-result');
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`, {
+                    method: 'OPTIONS'
+                });
+                
+                const allowOrigin = response.headers.get('Access-Control-Allow-Origin');
+                const allowMethods = response.headers.get('Access-Control-Allow-Methods');
+                
+                if (allowOrigin === '*' || allowOrigin === window.location.origin) {
+                    corsDiv.innerHTML = `
+                        <div class="text-green-600">
+                            ✅ CORS Configurado Correctamente<br>
+                            <small>Origin: ${allowOrigin || 'No especificado'}</small><br>
+                            <small>Methods: ${allowMethods || 'No especificado'}</small>
+                        </div>
+                    `;
+                    addLog('✅ CORS configurado correctamente', 'success');
+                } else {
+                    corsDiv.innerHTML = `
+                        <div class="text-yellow-600">
+                            ⚠️ CORS puede estar mal configurado<br>
+                            <small>Origin permitido: ${allowOrigin}</small><br>
+                            <small>Origin actual: ${window.location.origin}</small>
+                        </div>
+                    `;
+                    addLog('⚠️ Posible problema de CORS detectado', 'error');
+                }
+            } catch (error) {
+                corsDiv.innerHTML = `
+                    <div class="text-red-600">
+                        ❌ Error verificando CORS<br>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+                addLog(`❌ Error verificando CORS: ${error.message}`, 'error');
+            }
+        }
+
+        // Test de login
+        async function testLogin() {
+            const userSelect = document.getElementById('test-user');
+            const [email, password] = userSelect.value.split('|');
+            const resultDiv = document.getElementById('auth-result');
+            
+            addLog(`🔐 Intentando login con: ${email}`);
+            resultDiv.innerHTML = '<div class="animate-pulse">Autenticando...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.data?.tokens?.accessToken;
+                    currentUser = data.data?.user;
+                    
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600">
+                            ✅ Login Exitoso<br>
+                            <strong>Usuario:</strong> ${currentUser?.nombre}<br>
+                            <strong>Email:</strong> ${currentUser?.email}<br>
+                            <strong>Rol:</strong> ${currentUser?.rol}<br>
+                            <strong>Token:</strong> ${authToken ? 'Recibido ✓' : 'No recibido ✗'}
+                        </div>
+                    `;
+                    
+                    document.getElementById('test-logout').disabled = false;
+                    document.getElementById('test-users').disabled = false;
+                    document.getElementById('test-courses').disabled = false;
+                    document.getElementById('test-materias').disabled = false;
+                    document.getElementById('test-profile').disabled = false;
+                    
+                    addLog(`✅ Login exitoso como ${currentUser?.nombre} (${currentUser?.rol})`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="text-red-600">
+                            ❌ Login Fallido<br>
+                            <strong>Error:</strong> ${data.message || 'Error desconocido'}<br>
+                            <strong>Código:</strong> ${response.status}
+                        </div>
+                    `;
+                    addLog(`❌ Login fallido: ${data.message || 'Error desconocido'}`, 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="text-red-600">
+                        ❌ Error de Conexión<br>
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+                addLog(`❌ Error de conexión en login: ${error.message}`, 'error');
+            }
+        }
+
+        // Test de logout
+        async function testLogout() {
+            addLog('🚪 Cerrando sesión...');
+            authToken = null;
+            currentUser = null;
+            
+            document.getElementById('auth-result').innerHTML = 'Sesión cerrada. Selecciona un usuario para volver a autenticarte.';
+            document.getElementById('test-logout').disabled = true;
+            document.getElementById('test-users').disabled = true;
+            document.getElementById('test-courses').disabled = true;
+            document.getElementById('test-materias').disabled = true;
+            document.getElementById('test-profile').disabled = true;
+            
+            addLog('✅ Sesión cerrada correctamente', 'success');
+        }
+
+        // Test de API endpoints
+        async function testEndpoint(endpoint, buttonId) {
+            if (!authToken) {
+                alert('Primero debes hacer login');
+                return;
+            }
+
+            const button = document.getElementById(buttonId);
+            const resultDiv = document.getElementById('api-result');
+            
+            button.disabled = true;
+            button.innerHTML = '⏳ Probando...';
+            
+            addLog(`📊 Probando endpoint: ${endpoint}`);
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600 mb-2">
+                            ✅ ${endpoint} - Status: ${response.status}
+                        </div>
+                        <pre class="text-sm bg-gray-100 p-2 rounded overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    addLog(`✅ ${endpoint} respondió correctamente`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="text-red-600 mb-2">
+                            ❌ ${endpoint} - Status: ${response.status}
+                        </div>
+                        <pre class="text-sm bg-gray-100 p-2 rounded overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    addLog(`❌ ${endpoint} falló con status ${response.status}`, 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="text-red-600">
+                        ❌ Error en ${endpoint}: ${error.message}
+                    </div>
+                `;
+                addLog(`❌ Error en ${endpoint}: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = button.getAttribute('data-original-text');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Guardar textos originales de botones
+            document.querySelectorAll('button[id^="test-"]').forEach(btn => {
+                btn.setAttribute('data-original-text', btn.innerHTML);
+            });
+
+            // Eventos
+            document.getElementById('test-login').addEventListener('click', testLogin);
+            document.getElementById('test-logout').addEventListener('click', testLogout);
+            document.getElementById('test-users').addEventListener('click', () => testEndpoint('/users', 'test-users'));
+            document.getElementById('test-courses').addEventListener('click', () => testEndpoint('/cursos', 'test-courses'));
+            document.getElementById('test-materias').addEventListener('click', () => testEndpoint('/materias', 'test-materias'));
+            document.getElementById('test-profile').addEventListener('click', () => testEndpoint('/auth/me', 'test-profile'));
+
+            // Inicializar
+            testBackendStatus();
+        });
+    </script>
+</body>
+</html>

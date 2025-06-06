@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: ibas_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: ibas_academic
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - ibas_network
+
+  # Opcional: MongoDB Express para administración web
+  mongo-express:
+    image: mongo-express:latest
+    container_name: ibas_mongo_express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin123
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - mongodb
+    networks:
+      - ibas_network
+
+  # Opcional: Redis para cache
+  redis:
+    image: redis:7-alpine
+    container_name: ibas_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ibas_network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  ibas_network:
+    driver: bridge
+
+# Instrucciones de uso:
+# 
+# 1. Iniciar todos los servicios:
+#    docker-compose up -d
+#
+# 2. Ver logs:
+#    docker-compose logs -f mongodb
+#
+# 3. Parar servicios:
+#    docker-compose down
+#
+# 4. Parar y eliminar volúmenes (CUIDADO - borra datos):
+#    docker-compose down -v
+#
+# 5. Acceder a MongoDB Express:
+#    http://localhost:8081 (admin/admin123)
+#
+# 6. Configurar .env para Docker:
+#    MONGODB_URI=mongodb://ibas_user:ibas_password@localhost:27017/ibas_academic
+#    REDIS_URL=redis://localhost:6379

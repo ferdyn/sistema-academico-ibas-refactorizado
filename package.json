@@ -1,0 +1,37 @@
+{
+  "name": "sistema-academico-ibas-refactorizado",
+  "version": "1.0.0",
+  "description": "Sistema Académico IBAS - Frontend refactorizado con backend completo",
+  "keywords": [
+    "sistema-academico",
+    "react",
+    "nodejs",
+    "typescript",
+    "mongodb",
+    "refactorizado"
+  ],
+  "author": "ferdyn",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ferdyn/sistema-academico-ibas-refactorizado.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ferdyn/sistema-academico-ibas-refactorizado/issues"
+  },
+  "homepage": "https://github.com/ferdyn/sistema-academico-ibas-refactorizado#readme",
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "diagnose": "node tools/quick-diagnosis.js",
+    "deploy:prep": "node tools/prepare-deploy.js",
+    "demo": "open demo/index.html || xdg-open demo/index.html || start demo/index.html"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

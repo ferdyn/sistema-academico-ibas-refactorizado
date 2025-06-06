@@ -1,0 +1,667 @@
+{
+  "users": [
+    {
+      "id": "admin-001",
+      "email": "admin@ibas.edu",
+      "password": "admin123",
+      "nombre": "Carlos",
+      "apellido": "Mendoza",
+      "telefono": "+58 414-123-4567",
+      "direccion": "Caracas, Venezuela",
+      "fechaNacimiento": "1975-03-15",
+      "foto": "/images/profiles/admin-001.jpg",
+      "rol": "administrador",
+      "activo": true,
+      "fechaCreacion": "2024-01-01T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T20:30:00Z"
+    },
+    {
+      "id": "maestro-001",
+      "email": "jsanchez@ibas.edu",
+      "password": "maestro123",
+      "nombre": "José",
+      "apellido": "Sánchez",
+      "telefono": "+58 412-987-6543",
+      "direccion": "Valencia, Venezuela",
+      "fechaNacimiento": "1980-07-22",
+      "foto": "/images/profiles/maestro-001.jpg",
+      "rol": "maestro",
+      "activo": true,
+      "fechaCreacion": "2024-01-15T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T18:45:00Z"
+    },
+    {
+      "id": "maestro-002",
+      "email": "mrodriguez@ibas.edu",
+      "password": "maestro123",
+      "nombre": "María",
+      "apellido": "Rodríguez",
+      "telefono": "+58 424-555-7890",
+      "direccion": "Maracaibo, Venezuela",
+      "fechaNacimiento": "1978-11-10",
+      "foto": "/images/profiles/maestro-002.jpg",
+      "rol": "maestro",
+      "activo": true,
+      "fechaCreacion": "2024-01-15T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T19:15:00Z"
+    },
+    {
+      "id": "alumno-001",
+      "email": "pedro.garcia@estudiante.ibas.edu",
+      "password": "alumno123",
+      "nombre": "Pedro",
+      "apellido": "García",
+      "telefono": "+58 416-111-2222",
+      "direccion": "Barquisimeto, Venezuela",
+      "fechaNacimiento": "1995-05-12",
+      "foto": "/images/profiles/alumno-001.jpg",
+      "rol": "alumno",
+      "activo": true,
+      "fechaCreacion": "2024-02-01T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T21:00:00Z"
+    },
+    {
+      "id": "alumno-002",
+      "email": "ana.lopez@estudiante.ibas.edu",
+      "password": "alumno123",
+      "nombre": "Ana",
+      "apellido": "López",
+      "telefono": "+58 414-333-4444",
+      "direccion": "Mérida, Venezuela",
+      "fechaNacimiento": "1992-09-28",
+      "foto": "/images/profiles/alumno-002.jpg",
+      "rol": "alumno",
+      "activo": true,
+      "fechaCreacion": "2024-02-01T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T20:45:00Z"
+    },
+    {
+      "id": "alumno-003",
+      "email": "luis.martinez@estudiante.ibas.edu",
+      "password": "alumno123",
+      "nombre": "Luis",
+      "apellido": "Martínez",
+      "telefono": "+58 426-555-6666",
+      "direccion": "San Cristóbal, Venezuela",
+      "fechaNacimiento": "1990-12-03",
+      "foto": "/images/profiles/alumno-003.jpg",
+      "rol": "alumno",
+      "activo": true,
+      "fechaCreacion": "2024-02-15T00:00:00Z",
+      "ultimoAcceso": "2024-06-05T19:30:00Z"
+    }
+  ],
+  "niveles": [
+    {
+      "id": "nivel-001",
+      "nombre": "Primer Año",
+      "descripcion": "Fundamentos bíblicos y teológicos",
+      "orden": 1,
+      "activo": true
+    },
+    {
+      "id": "nivel-002",
+      "nombre": "Segundo Año",
+      "descripcion": "Estudios intermedios de escrituras",
+      "orden": 2,
+      "activo": true
+    },
+    {
+      "id": "nivel-003",
+      "nombre": "Tercer Año",
+      "descripcion": "Teología pastoral y ministerial",
+      "orden": 3,
+      "activo": true
+    },
+    {
+      "id": "nivel-004",
+      "nombre": "Cuarto Año",
+      "descripcion": "Especialización y práctica ministerial",
+      "orden": 4,
+      "activo": true
+    }
+  ],
+  "materias": [
+    {
+      "id": "materia-001",
+      "codigo": "BIB101",
+      "nombre": "Introducción a la Biblia",
+      "descripcion": "Estudio panorámico del Antiguo y Nuevo Testamento",
+      "creditos": 3,
+      "nivelId": "nivel-001",
+      "prerequisitos": [],
+      "activa": true
+    },
+    {
+      "id": "materia-002",
+      "codigo": "TEO101",
+      "nombre": "Teología Sistemática I",
+      "descripcion": "Fundamentos de la doctrina cristiana",
+      "creditos": 4,
+      "nivelId": "nivel-001",
+      "prerequisitos": ["materia-001"],
+      "activa": true
+    },
+    {
+      "id": "materia-003",
+      "codigo": "HER101",
+      "nombre": "Hermenéutica Bíblica",
+      "descripcion": "Principios de interpretación bíblica",
+      "creditos": 3,
+      "nivelId": "nivel-002",
+      "prerequisitos": ["materia-001"],
+      "activa": true
+    },
+    {
+      "id": "materia-004",
+      "codigo": "HIS101",
+      "nombre": "Historia de la Iglesia",
+      "descripcion": "Desarrollo histórico del cristianismo",
+      "creditos": 3,
+      "nivelId": "nivel-002",
+      "prerequisitos": ["materia-002"],
+      "activa": true
+    },
+    {
+      "id": "materia-005",
+      "codigo": "PAS101",
+      "nombre": "Teología Pastoral",
+      "descripcion": "Principios y práctica del ministerio pastoral",
+      "creditos": 4,
+      "nivelId": "nivel-003",
+      "prerequisitos": ["materia-002", "materia-003"],
+      "activa": true
+    },
+    {
+      "id": "materia-006",
+      "codigo": "HOM101",
+      "nombre": "Homilética",
+      "descripcion": "Arte y técnica de la predicación",
+      "creditos": 3,
+      "nivelId": "nivel-003",
+      "prerequisitos": ["materia-003"],
+      "activa": true
+    }
+  ],
+  "cursos": [
+    {
+      "id": "curso-001",
+      "materiaId": "materia-001",
+      "maestroId": "maestro-001",
+      "nombre": "Introducción a la Biblia - Grupo A",
+      "descripcion": "Estudio panorámico intensivo del Antiguo y Nuevo Testamento con énfasis en la narrativa bíblica",
+      "fechaInicio": "2024-03-01",
+      "fechaFin": "2024-06-30",
+      "modalidad": "presencial",
+      "aula": "Aula 101",
+      "horario": "Lunes y Miércoles 7:00 PM - 9:00 PM",
+      "cupoMaximo": 25,
+      "activo": true
+    },
+    {
+      "id": "curso-002",
+      "materiaId": "materia-002",
+      "maestroId": "maestro-002",
+      "nombre": "Teología Sistemática I - Grupo A",
+      "descripcion": "Fundamentos doctrinales del cristianismo apostólico",
+      "fechaInicio": "2024-03-01",
+      "fechaFin": "2024-06-30",
+      "modalidad": "hibrida",
+      "aula": "Aula 102",
+      "horario": "Martes y Jueves 7:00 PM - 9:00 PM",
+      "cupoMaximo": 20,
+      "activo": true
+    },
+    {
+      "id": "curso-003",
+      "materiaId": "materia-003",
+      "maestroId": "maestro-001",
+      "nombre": "Hermenéutica Bíblica - Grupo B",
+      "descripcion": "Métodos y principios para la correcta interpretación de las Escrituras",
+      "fechaInicio": "2024-03-15",
+      "fechaFin": "2024-07-15",
+      "modalidad": "virtual",
+      "horario": "Sábados 9:00 AM - 12:00 PM",
+      "cupoMaximo": 30,
+      "activo": true
+    }
+  ],
+  "inscripciones": [
+    {
+      "id": "inscripcion-001",
+      "cursoId": "curso-001",
+      "alumnoId": "alumno-001",
+      "fechaInscripcion": "2024-02-28",
+      "calificacionFinal": 85,
+      "estado": "cursando"
+    },
+    {
+      "id": "inscripcion-002",
+      "cursoId": "curso-002",
+      "alumnoId": "alumno-001",
+      "fechaInscripcion": "2024-02-28",
+      "estado": "cursando"
+    },
+    {
+      "id": "inscripcion-003",
+      "cursoId": "curso-001",
+      "alumnoId": "alumno-002",
+      "fechaInscripcion": "2024-03-01",
+      "calificacionFinal": 92,
+      "estado": "cursando"
+    },
+    {
+      "id": "inscripcion-004",
+      "cursoId": "curso-003",
+      "alumnoId": "alumno-002",
+      "fechaInscripcion": "2024-03-10",
+      "estado": "cursando"
+    },
+    {
+      "id": "inscripcion-005",
+      "cursoId": "curso-001",
+      "alumnoId": "alumno-003",
+      "fechaInscripcion": "2024-03-05",
+      "calificacionFinal": 78,
+      "estado": "cursando"
+    }
+  ],
+  "calificaciones": [
+    {
+      "id": "calificacion-001",
+      "inscripcionId": "inscripcion-001",
+      "tipo": "tarea",
+      "descripcion": "Ensayo sobre los libros históricos",
+      "nota": 18,
+      "notaMaxima": 20,
+      "peso": 15,
+      "fecha": "2024-03-15",
+      "comentarios": "Excelente análisis bíblico"
+    },
+    {
+      "id": "calificacion-002",
+      "inscripcionId": "inscripcion-001",
+      "tipo": "examen",
+      "descripcion": "Parcial 1 - Pentateuco",
+      "nota": 16,
+      "notaMaxima": 20,
+      "peso": 25,
+      "fecha": "2024-04-01",
+      "comentarios": "Buen dominio del contenido"
+    },
+    {
+      "id": "calificacion-003",
+      "inscripcionId": "inscripcion-003",
+      "tipo": "tarea",
+      "descripcion": "Ensayo sobre los libros históricos",
+      "nota": 19,
+      "notaMaxima": 20,
+      "peso": 15,
+      "fecha": "2024-03-15",
+      "comentarios": "Excepcional trabajo investigativo"
+    },
+    {
+      "id": "calificacion-004",
+      "inscripcionId": "inscripcion-003",
+      "tipo": "examen",
+      "descripcion": "Parcial 1 - Pentateuco",
+      "nota": 18,
+      "notaMaxima": 20,
+      "peso": 25,
+      "fecha": "2024-04-01",
+      "comentarios": "Excelente comprensión"
+    }
+  ],
+  "tareas": [
+    {
+      "id": "tarea-001",
+      "cursoId": "curso-001",
+      "titulo": "Ensayo sobre los Libros Históricos",
+      "descripcion": "Realizar un análisis de 5 páginas sobre la importancia de los libros históricos en el Antiguo Testamento",
+      "fechaCreacion": "2024-03-10",
+      "fechaVencimiento": "2024-03-25",
+      "puntaje": 20,
+      "activa": true,
+      "archivos": ["/documents/tareas/instrucciones-libros-historicos.pdf"]
+    },
+    {
+      "id": "tarea-002",
+      "cursoId": "curso-001",
+      "titulo": "Mapa Conceptual del Nuevo Testamento",
+      "descripcion": "Crear un mapa conceptual que muestre la estructura y organización del Nuevo Testamento",
+      "fechaCreacion": "2024-04-05",
+      "fechaVencimiento": "2024-04-20",
+      "puntaje": 15,
+      "activa": true,
+      "archivos": []
+    },
+    {
+      "id": "tarea-003",
+      "cursoId": "curso-002",
+      "titulo": "Exposición Doctrinal",
+      "descripcion": "Preparar una exposición de 10 minutos sobre una doctrina fundamental",
+      "fechaCreacion": "2024-03-20",
+      "fechaVencimiento": "2024-04-10",
+      "puntaje": 25,
+      "activa": true,
+      "archivos": []
+    }
+  ],
+  "entregas": [
+    {
+      "id": "entrega-001",
+      "tareaId": "tarea-001",
+      "alumnoId": "alumno-001",
+      "fechaEntrega": "2024-03-24T23:30:00Z",
+      "archivos": ["/documents/entregas/pedro-garcia-libros-historicos.pdf"],
+      "comentarios": "He incluido referencias adicionales para fortalecer los argumentos",
+      "calificacion": 18,
+      "feedback": "Excelente análisis bíblico, muy bien documentado",
+      "estado": "calificada"
+    },
+    {
+      "id": "entrega-002",
+      "tareaId": "tarea-001",
+      "alumnoId": "alumno-002",
+      "fechaEntrega": "2024-03-23T20:15:00Z",
+      "archivos": ["/documents/entregas/ana-lopez-libros-historicos.pdf"],
+      "comentarios": "Trabajo realizado con dedicación y oración",
+      "calificacion": 19,
+      "feedback": "Excepcional trabajo investigativo y aplicación práctica",
+      "estado": "calificada"
+    }
+  ],
+  "examenes": [
+    {
+      "id": "examen-001",
+      "cursoId": "curso-001",
+      "titulo": "Parcial 1 - Pentateuco",
+      "descripcion": "Examen sobre los primeros cinco libros de la Biblia",
+      "fechaExamen": "2024-04-01T19:00:00Z",
+      "duracion": 120,
+      "puntaje": 20,
+      "tipo": "parcial",
+      "activo": true
+    },
+    {
+      "id": "examen-002",
+      "cursoId": "curso-001",
+      "titulo": "Examen Final - Panorama Bíblico",
+      "descripcion": "Examen comprehensivo de todo el contenido del curso",
+      "fechaExamen": "2024-06-15T19:00:00Z",
+      "duracion": 180,
+      "puntaje": 30,
+      "tipo": "final",
+      "activo": true
+    },
+    {
+      "id": "examen-003",
+      "cursoId": "curso-002",
+      "titulo": "Parcial 1 - Doctrina de Dios",
+      "descripcion": "Examen sobre la naturaleza y atributos de Dios",
+      "fechaExamen": "2024-04-05T19:00:00Z",
+      "duracion": 90,
+      "puntaje": 25,
+      "tipo": "parcial",
+      "activo": true
+    }
+  ],
+  "resultados": [
+    {
+      "id": "resultado-001",
+      "examenId": "examen-001",
+      "alumnoId": "alumno-001",
+      "fechaRealizado": "2024-04-01T19:00:00Z",
+      "calificacion": 16,
+      "duracionRealizada": 115,
+      "comentarios": "Buen dominio del contenido, algunos detalles por mejorar"
+    },
+    {
+      "id": "resultado-002",
+      "examenId": "examen-001",
+      "alumnoId": "alumno-002",
+      "fechaRealizado": "2024-04-01T19:00:00Z",
+      "calificacion": 18,
+      "duracionRealizada": 110,
+      "comentarios": "Excelente comprensión y aplicación de los conceptos"
+    },
+    {
+      "id": "resultado-003",
+      "examenId": "examen-001",
+      "alumnoId": "alumno-003",
+      "fechaRealizado": "2024-04-01T19:00:00Z",
+      "calificacion": 14,
+      "duracionRealizada": 120,
+      "comentarios": "Necesita reforzar algunos conceptos fundamentales"
+    }
+  ],
+  "pagos": [
+    {
+      "id": "pago-001",
+      "alumnoId": "alumno-001",
+      "concepto": "Matrícula Semestre 2024-1",
+      "monto": 150.00,
+      "fechaVencimiento": "2024-03-01",
+      "fechaPago": "2024-02-28",
+      "metodoPago": "transferencia",
+      "referencia": "TRF-20240228-001",
+      "comprobante": "/documents/comprobantes/pedro-garcia-matricula-2024-1.pdf",
+      "estado": "pagado"
+    },
+    {
+      "id": "pago-002",
+      "alumnoId": "alumno-001",
+      "concepto": "Mensualidad Abril 2024",
+      "monto": 75.00,
+      "fechaVencimiento": "2024-04-05",
+      "fechaPago": "2024-04-03",
+      "metodoPago": "deposito",
+      "referencia": "DEP-20240403-001",
+      "comprobante": "/documents/comprobantes/pedro-garcia-abril-2024.pdf",
+      "estado": "pagado"
+    },
+    {
+      "id": "pago-003",
+      "alumnoId": "alumno-001",
+      "concepto": "Mensualidad Mayo 2024",
+      "monto": 75.00,
+      "fechaVencimiento": "2024-05-05",
+      "estado": "pendiente"
+    },
+    {
+      "id": "pago-004",
+      "alumnoId": "alumno-002",
+      "concepto": "Matrícula Semestre 2024-1",
+      "monto": 150.00,
+      "fechaVencimiento": "2024-03-01",
+      "fechaPago": "2024-03-01",
+      "metodoPago": "efectivo",
+      "estado": "pagado"
+    },
+    {
+      "id": "pago-005",
+      "alumnoId": "alumno-002",
+      "concepto": "Mensualidad Abril 2024",
+      "monto": 75.00,
+      "fechaVencimiento": "2024-04-05",
+      "fechaPago": "2024-04-04",
+      "metodoPago": "transferencia",
+      "referencia": "TRF-20240404-002",
+      "estado": "pagado"
+    },
+    {
+      "id": "pago-006",
+      "alumnoId": "alumno-003",
+      "concepto": "Mensualidad Abril 2024",
+      "monto": 75.00,
+      "fechaVencimiento": "2024-04-05",
+      "estado": "vencido"
+    }
+  ],
+  "nominas": [
+    {
+      "id": "nomina-001",
+      "maestroId": "maestro-001",
+      "periodo": "2024-03",
+      "salarioBase": 800.00,
+      "bonificaciones": 100.00,
+      "deducciones": 50.00,
+      "salarioNeto": 850.00,
+      "fechaPago": "2024-03-30",
+      "estado": "pagado"
+    },
+    {
+      "id": "nomina-002",
+      "maestroId": "maestro-002",
+      "periodo": "2024-03",
+      "salarioBase": 750.00,
+      "bonificaciones": 75.00,
+      "deducciones": 40.00,
+      "salarioNeto": 785.00,
+      "fechaPago": "2024-03-30",
+      "estado": "pagado"
+    },
+    {
+      "id": "nomina-003",
+      "maestroId": "maestro-001",
+      "periodo": "2024-04",
+      "salarioBase": 800.00,
+      "bonificaciones": 120.00,
+      "deducciones": 50.00,
+      "salarioNeto": 870.00,
+      "estado": "pendiente"
+    },
+    {
+      "id": "nomina-004",
+      "maestroId": "maestro-002",
+      "periodo": "2024-04",
+      "salarioBase": 750.00,
+      "bonificaciones": 85.00,
+      "deducciones": 40.00,
+      "salarioNeto": 795.00,
+      "estado": "pendiente"
+    }
+  ],
+  "eventos": [
+    {
+      "id": "evento-001",
+      "titulo": "Inicio de Clases 2024-1",
+      "descripcion": "Ceremonia de inauguración del nuevo semestre académico",
+      "fechaInicio": "2024-03-01T08:00:00Z",
+      "fechaFin": "2024-03-01T10:00:00Z",
+      "tipo": "academico",
+      "audiencia": "todos",
+      "creadorId": "admin-001",
+      "activo": true
+    },
+    {
+      "id": "evento-002",
+      "titulo": "Vigilia de Oración",
+      "descripcion": "Tiempo especial de oración por los estudiantes y el instituto",
+      "fechaInicio": "2024-03-15T19:00:00Z",
+      "fechaFin": "2024-03-15T23:00:00Z",
+      "tipo": "social",
+      "audiencia": "todos",
+      "creadorId": "admin-001",
+      "activo": true
+    },
+    {
+      "id": "evento-003",
+      "titulo": "Semana de Exámenes Parciales",
+      "descripcion": "Primera ronda de exámenes parciales del semestre",
+      "fechaInicio": "2024-04-01T00:00:00Z",
+      "fechaFin": "2024-04-05T23:59:59Z",
+      "tipo": "academico",
+      "audiencia": "alumnos",
+      "creadorId": "admin-001",
+      "activo": true
+    },
+    {
+      "id": "evento-004",
+      "titulo": "Conferencia Pastoral",
+      "descripcion": "Seminario especial para pastores y líderes ministeriales",
+      "fechaInicio": "2024-04-20T09:00:00Z",
+      "fechaFin": "2024-04-20T17:00:00Z",
+      "tipo": "academico",
+      "audiencia": "maestros",
+      "creadorId": "maestro-001",
+      "activo": true
+    },
+    {
+      "id": "evento-005",
+      "titulo": "Día del Estudiante",
+      "descripcion": "Celebración especial en honor a todos los estudiantes del instituto",
+      "fechaInicio": "2024-05-10T14:00:00Z",
+      "fechaFin": "2024-05-10T18:00:00Z",
+      "tipo": "social",
+      "audiencia": "todos",
+      "creadorId": "admin-001",
+      "activo": true
+    }
+  ],
+  "notificaciones": [
+    {
+      "id": "notif-001",
+      "usuarioId": "alumno-001",
+      "titulo": "Nueva tarea asignada",
+      "mensaje": "Se ha asignado una nueva tarea en el curso de Introducción a la Biblia",
+      "tipo": "info",
+      "leida": false,
+      "fechaCreacion": "2024-06-05T20:00:00Z",
+      "enlace": "/materias/materia-001"
+    },
+    {
+      "id": "notif-002",
+      "usuarioId": "alumno-001",
+      "titulo": "Pago vencido",
+      "mensaje": "Su mensualidad de Mayo 2024 está pendiente de pago",
+      "tipo": "warning",
+      "leida": false,
+      "fechaCreacion": "2024-06-05T15:30:00Z",
+      "enlace": "/finanzas"
+    },
+    {
+      "id": "notif-003",
+      "usuarioId": "maestro-001",
+      "titulo": "Nuevo estudiante inscrito",
+      "mensaje": "Un nuevo estudiante se ha inscrito en su curso de Hermenéutica Bíblica",
+      "tipo": "success",
+      "leida": true,
+      "fechaCreacion": "2024-06-04T10:15:00Z",
+      "enlace": "/cursos/curso-003"
+    },
+    {
+      "id": "notif-004",
+      "usuarioId": "admin-001",
+      "titulo": "Reporte mensual disponible",
+      "mensaje": "El reporte financiero de Mayo 2024 está listo para revisión",
+      "tipo": "info",
+      "leida": false,
+      "fechaCreacion": "2024-06-01T09:00:00Z",
+      "enlace": "/finanzas"
+    }
+  ],
+  "configuraciones": [
+    {
+      "userId": "admin-001",
+      "tema": "oscuro",
+      "idioma": "es",
+      "notificacionesEmail": true,
+      "notificacionesPush": true
+    },
+    {
+      "userId": "maestro-001",
+      "tema": "claro",
+      "idioma": "es",
+      "notificacionesEmail": true,
+      "notificacionesPush": false
+    },
+    {
+      "userId": "alumno-001",
+      "tema": "claro",
+      "idioma": "es",
+      "notificacionesEmail": true,
+      "notificacionesPush": true
+    }
+  ]
+}
