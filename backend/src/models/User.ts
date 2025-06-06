@@ -1,305 +1,176 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import bcryptjs from 'bcryptjs';
-import { IUser, UserRole } from '@/types';
-import config from '@/config';
+import mongoose, { Schema, Document } from 'mongoose';
+import bcrypt from 'bcryptjs';
+
+export interface IUser extends Document {
+  nombre: string;
+  apellidos: string;
+  email: string;
+  password: string;
+  rol: 'alumno' | 'profesor' | 'administrador';
+  telefono?: string;
+  dni?: string;
+  fechaNacimiento?: Date;
+  direccion?: string;
+  activo: boolean;
+  fechaCreacion: Date;
+  ultimoAcceso?: Date;
+  // Campos específicos para alumnos
+  tutorLegal?: string;
+  telefonoTutor?: string;
+  // Campos específicos para profesores
+  especialidad?: string;
+  // Métodos
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  generateAuthToken(): string;
+}
 
 const userSchema = new Schema<IUser>({
-  email: {
-    type: String,
-    required: [true, 'El email es requerido'],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    match: [
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      'Por favor ingresa un email válido'
-    ]
-  },
-  password: {
-    type: String,
-    required: [true, 'La contraseña es requerida'],
-    minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
-    select: false // No incluir en consultas por defecto
-  },
   nombre: {
     type: String,
-    required: [true, 'El nombre es requerido'],
+    required: [true, 'El nombre es obligatorio'],
     trim: true,
     maxlength: [50, 'El nombre no puede exceder 50 caracteres']
   },
-  apellido: {
+  apellidos: {
     type: String,
-    required: [true, 'El apellido es requerido'],
+    required: [true, 'Los apellidos son obligatorios'],
     trim: true,
-    maxlength: [50, 'El apellido no puede exceder 50 caracteres']
+    maxlength: [100, 'Los apellidos no pueden exceder 100 caracteres']
+  },
+  email: {
+    type: String,
+    required: [true, 'El email es obligatorio'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Email inválido']
+  },
+  password: {
+    type: String,
+    required: [true, 'La contraseña es obligatoria'],
+    minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
+    select: false
+  },
+  rol: {
+    type: String,
+    enum: ['alumno', 'profesor', 'administrador'],
+    required: [true, 'El rol es obligatorio']
   },
   telefono: {
     type: String,
-    trim: true,
-    match: [
-      /^[\+]?[1-9][\d]{0,15}$/,
-      'Por favor ingresa un número de teléfono válido'
-    ]
+    match: [/^[6789][0-9]{8}$/, 'Teléfono español inválido']
   },
-  direccion: {
+  dni: {
     type: String,
-    trim: true,
-    maxlength: [200, 'La dirección no puede exceder 200 caracteres']
+    unique: true,
+    sparse: true,
+    match: [/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI español inválido']
   },
   fechaNacimiento: {
     type: Date,
     validate: {
       validator: function(value: Date) {
-        if (!value) return true; // Campo opcional
-        const today = new Date();
-        const age = today.getFullYear() - value.getFullYear();
-        return age >= 10 && age <= 100;
+        return value < new Date();
       },
-      message: 'La fecha de nacimiento debe indicar una edad entre 10 y 100 años'
+      message: 'La fecha de nacimiento debe ser anterior a hoy'
     }
   },
-  foto: {
+  direccion: {
     type: String,
-    default: null
-  },
-  rol: {
-    type: String,
-    enum: {
-      values: ['alumno', 'maestro', 'administrador'] as UserRole[],
-      message: 'El rol debe ser: alumno, maestro o administrador'
-    },
-    required: [true, 'El rol es requerido'],
-    default: 'alumno'
+    maxlength: [200, 'La dirección no puede exceder 200 caracteres']
   },
   activo: {
     type: Boolean,
     default: true
   },
+  fechaCreacion: {
+    type: Date,
+    default: Date.now
+  },
   ultimoAcceso: {
-    type: Date,
-    default: null
+    type: Date
   },
-  refreshTokens: [{
-    type: String
-  }],
-  emailVerificado: {
-    type: Boolean,
-    default: false
-  },
-  codigoVerificacion: {
+  // Campos específicos para alumnos
+  tutorLegal: {
     type: String,
-    select: false
+    required: function(this: IUser) {
+      return this.rol === 'alumno' && this.fechaNacimiento && 
+             new Date().getFullYear() - this.fechaNacimiento.getFullYear() < 18;
+    }
   },
-  codigoVerificacionExpira: {
-    type: Date,
-    select: false
-  },
-  resetPasswordToken: {
+  telefonoTutor: {
     type: String,
-    select: false
+    match: [/^[6789][0-9]{8}$/, 'Teléfono del tutor inválido']
   },
-  resetPasswordExpira: {
-    type: Date,
-    select: false
+  // Campos específicos para profesores
+  especialidad: {
+    type: String,
+    required: function(this: IUser) {
+      return this.rol === 'profesor';
+    }
   }
 }, {
   timestamps: true,
-  toJSON: {
-    transform: function(doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-      delete ret.__v;
-      delete ret.password;
-      delete ret.refreshTokens;
-      delete ret.codigoVerificacion;
-      delete ret.codigoVerificacionExpira;
-      delete ret.resetPasswordToken;
-      delete ret.resetPasswordExpira;
-      return ret;
-    }
-  },
-  toObject: {
-    transform: function(doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    }
-  }
+  collection: 'usuarios'
 });
 
 // Índices
 userSchema.index({ email: 1 });
 userSchema.index({ rol: 1 });
 userSchema.index({ activo: 1 });
-userSchema.index({ createdAt: -1 });
-userSchema.index({ 
-  nombre: 'text', 
-  apellido: 'text', 
-  email: 'text' 
-}, {
-  weights: {
-    nombre: 10,
-    apellido: 10,
-    email: 5
-  }
-});
+userSchema.index({ dni: 1 }, { sparse: true });
 
-// Middleware pre-save para hashear la contraseña
+// Middleware pre-save para hashear contraseña
 userSchema.pre('save', async function(next) {
-  // Solo hashear la contraseña si ha sido modificada
   if (!this.isModified('password')) return next();
-
+  
   try {
-    // Hash de la contraseña
-    const salt = await bcryptjs.genSalt(config.BCRYPT_ROUNDS);
-    this.password = await bcryptjs.hash(this.password, salt);
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (error) {
-    next(error as Error);
+  } catch (error: any) {
+    next(error);
   }
 });
 
-// Middleware pre-save para limpiar tokens de refresh al desactivar usuario
-userSchema.pre('save', function(next) {
-  if (this.isModified('activo') && !this.activo) {
-    this.refreshTokens = [];
-  }
-  next();
-});
-
-// Métodos de instancia
+// Método para comparar contraseñas
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcryptjs.compare(candidatePassword, this.password);
-};
-
-userSchema.methods.addRefreshToken = function(token: string): void {
-  // Limitar a máximo 5 tokens de refresh por usuario
-  if (this.refreshTokens.length >= 5) {
-    this.refreshTokens.shift(); // Remover el más antiguo
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    return false;
   }
-  this.refreshTokens.push(token);
 };
 
-userSchema.methods.removeRefreshToken = function(token: string): void {
-  this.refreshTokens = this.refreshTokens.filter((t: string) => t !== token);
-};
-
-userSchema.methods.clearRefreshTokens = function(): void {
-  this.refreshTokens = [];
-};
-
-userSchema.methods.updateLastAccess = function(): void {
-  this.ultimoAcceso = new Date();
-};
-
-userSchema.methods.getFullName = function(): string {
-  return `${this.nombre} ${this.apellido}`;
-};
-
-userSchema.methods.isAdmin = function(): boolean {
-  return this.rol === 'administrador';
-};
-
-userSchema.methods.isMaestro = function(): boolean {
-  return this.rol === 'maestro';
-};
-
-userSchema.methods.isAlumno = function(): boolean {
-  return this.rol === 'alumno';
-};
-
-// Métodos estáticos
-userSchema.statics.findByEmail = function(email: string) {
-  return this.findOne({ email: email.toLowerCase() });
-};
-
-userSchema.statics.findActiveUsers = function() {
-  return this.find({ activo: true });
-};
-
-userSchema.statics.findByRole = function(rol: UserRole) {
-  return this.find({ rol, activo: true });
-};
-
-userSchema.statics.searchUsers = function(searchTerm: string, options: any = {}) {
-  const query: any = {
-    $or: [
-      { nombre: { $regex: searchTerm, $options: 'i' } },
-      { apellido: { $regex: searchTerm, $options: 'i' } },
-      { email: { $regex: searchTerm, $options: 'i' } }
-    ]
-  };
-
-  if (options.rol) {
-    query.rol = options.rol;
-  }
-
-  if (options.activo !== undefined) {
-    query.activo = options.activo;
-  }
-
-  return this.find(query);
-};
-
-userSchema.statics.getUsersStats = async function() {
-  const stats = await this.aggregate([
-    {
-      $group: {
-        _id: '$rol',
-        count: { $sum: 1 },
-        active: { 
-          $sum: { 
-            $cond: [{ $eq: ['$activo', true] }, 1, 0] 
-          } 
-        }
-      }
-    }
-  ]);
-
-  return stats.reduce((acc, stat) => {
-    acc[stat._id] = {
-      total: stat.count,
-      active: stat.active
-    };
-    return acc;
-  }, {} as Record<string, { total: number; active: number }>);
-};
-
-// Virtual para el nombre completo
-userSchema.virtual('nombreCompleto').get(function() {
-  return `${this.nombre} ${this.apellido}`;
+// Método virtual para nombre completo (formato europeo)
+userSchema.virtual('nombreCompleto').get(function(this: IUser) {
+  return `${this.apellidos}, ${this.nombre}`;
 });
 
-// Virtual para la edad
-userSchema.virtual('edad').get(function() {
+// Método virtual para edad
+userSchema.virtual('edad').get(function(this: IUser) {
   if (!this.fechaNacimiento) return null;
-  const today = new Date();
-  const birthDate = new Date(this.fechaNacimiento);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const hoy = new Date();
+  const nacimiento = new Date(this.fechaNacimiento);
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mesActual = hoy.getMonth();
+  const mesNacimiento = nacimiento.getMonth();
   
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+  if (mesActual < mesNacimiento || (mesActual === mesNacimiento && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
   }
   
-  return age;
+  return edad;
 });
 
 // Configurar virtuals en JSON
-userSchema.set('toJSON', { virtuals: true });
-userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  }
+});
 
-const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
-
-export default User;
-
-// Exportar tipos adicionales para TypeScript
-export interface UserDocument extends IUser {}
-export interface UserModel extends Model<IUser> {
-  findByEmail(email: string): Promise<IUser | null>;
-  findActiveUsers(): Promise<IUser[]>;
-  findByRole(rol: UserRole): Promise<IUser[]>;
-  searchUsers(searchTerm: string, options?: any): Promise<IUser[]>;
-  getUsersStats(): Promise<Record<string, { total: number; active: number }>>;
-}
+export default mongoose.model<IUser>('User', userSchema);

@@ -17,7 +17,7 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-graduation-cap text-2xl"></i>
-                        <h1 class="text-xl font-bold">Sistema Académico IBAS</h1>
+                        <h1 class="text-xl font-bold">Sistema Académico IBAS - España</h1>
                         <span class="bg-green-500 text-xs px-2 py-1 rounded-full">DEMO ONLINE</span>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -38,7 +38,7 @@
                 <div class="text-center mb-6">
                     <i class="fas fa-graduation-cap text-4xl text-blue-600 mb-4"></i>
                     <h2 class="text-2xl font-bold text-gray-800">Iniciar Sesión</h2>
-                    <p class="text-gray-600">Demo del Sistema Académico IBAS</p>
+                    <p class="text-gray-600">Demo del Sistema Académico IBAS - España</p>
                 </div>
 
                 <form @submit.prevent="login" class="space-y-4">
@@ -148,7 +148,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <h4 class="font-medium text-gray-800">{{ curso.materia }}</h4>
                                     <span :class="['px-2 py-1 rounded-full text-xs', 
-                                                  curso.activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800']">
+                                                  curso.activo ? 'bg-green-10 text-green-800' : 'bg-gray-10 text-gray-800']">
                                         {{ curso.activo ? 'Activo' : 'Finalizado' }}
                                     </span>
                                 </div>
@@ -174,7 +174,7 @@
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Materia</th>
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Fecha Entrega</th>
                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                        <th v-if="currentUser.rol === 'alumno'" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Calificación</th>
+                                        <th v-if="currentUser.rol === 'alumno'" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nota</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
@@ -188,7 +188,7 @@
                                             </span>
                                         </td>
                                         <td v-if="currentUser.rol === 'alumno'" class="px-4 py-2 text-sm text-gray-600">
-                                            {{ tarea.calificacion ? tarea.calificacion + '/100' : 'Pendiente' }}
+                                            {{ tarea.calificacion ? tarea.calificacion + '/10' : 'Pendiente' }}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -221,7 +221,7 @@
                                         </td>
                                         <td class="px-4 py-2">
                                             <span :class="['px-2 py-1 rounded-full text-xs', 
-                                                          user.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']">
+                                                          user.activo ? 'bg-green-10 text-green-800' : 'bg-red-10 text-red-800']">
                                                 {{ user.activo ? 'Activo' : 'Inactivo' }}
                                             </span>
                                         </td>
@@ -240,7 +240,7 @@
             <div class="container mx-auto px-4 text-center">
                 <div class="mb-4">
                     <i class="fas fa-graduation-cap text-2xl mb-2"></i>
-                    <h3 class="text-lg font-semibold">Sistema Académico IBAS</h3>
+                    <h3 class="text-lg font-semibold">Sistema Académico IBAS - España</h3>
                     <p class="text-gray-400">Demo Online - Frontend Refactorizado</p>
                 </div>
                 <div class="flex flex-wrap justify-center items-center space-x-6 text-sm text-gray-400">
@@ -281,7 +281,7 @@
                             id: 2,
                             nombre: 'José Sánchez',
                             email: 'jsanchez@ibas.edu',
-                            rol: 'maestro',
+                            rol: 'profesor',
                             activo: true,
                             ultimoAcceso: new Date()
                         },
@@ -298,26 +298,26 @@
                     // Datos de prueba
                     mockData: {
                         cursos: [
-                            { id: 1, materia: 'Matemáticas Avanzadas', descripcion: 'Cálculo diferencial e integral', activo: true, estudiantes: 25, periodo: '2024-1', maestroId: 2 },
-                            { id: 2, materia: 'Programación Web', descripcion: 'Desarrollo con React y Node.js', activo: true, estudiantes: 30, periodo: '2024-1', maestroId: 2 },
-                            { id: 3, materia: 'Base de Datos', descripcion: 'Diseño y administración de BD', activo: true, estudiantes: 20, periodo: '2024-1', maestroId: 2 }
+                            { id: 1, materia: 'Matemáticas Avanzadas', descripcion: 'Cálculo diferencial e integral', activo: true, estudiantes: 25, periodo: '2024-1', profesorId: 2 },
+                            { id: 2, materia: 'Programación Web', descripcion: 'Desarrollo con React y Node.js', activo: true, estudiantes: 30, periodo: '2024-1', profesorId: 2 },
+                            { id: 3, materia: 'Base de Datos', descripcion: 'Diseño y administración de BD', activo: true, estudiantes: 20, periodo: '2024-1', profesorId: 2 }
                         ],
                         
                         tareas: [
-                            { id: 1, titulo: 'Derivadas e Integrales', materia: 'Matemáticas Avanzadas', fechaVencimiento: new Date(Date.now() + 7*24*60*60*1000), estado: 'Pendiente', calificacion: null, estudianteId: 3 },
-                            { id: 2, titulo: 'Proyecto React', materia: 'Programación Web', fechaVencimiento: new Date(Date.now() + 3*24*60*60*1000), estado: 'En Progreso', calificacion: null, estudianteId: 3 },
-                            { id: 3, titulo: 'Diseño ER', materia: 'Base de Datos', fechaVencimiento: new Date(Date.now() - 2*24*60*60*1000), estado: 'Entregada', calificacion: 85, estudianteId: 3 }
+                            { id: 1, titulo: 'Derivadas e Integrales', materia: 'Matemáticas Avanzadas', fechaVencimiento: new Date(Date.now() + 7*24*60*60*100), estado: 'Pendiente', calificacion: null, estudianteId: 3 },
+                            { id: 2, titulo: 'Proyecto React', materia: 'Programación Web', fechaVencimiento: new Date(Date.now() + 3*24*60*60*100), estado: 'En Progreso', calificacion: null, estudianteId: 3 },
+                            { id: 3, titulo: 'Diseño ER', materia: 'Base de Datos', fechaVencimiento: new Date(Date.now() - 2*24*60*60*100), estado: 'Entregada', calificacion: 85, estudianteId: 3 }
                         ],
 
                         actividades: [
                             { id: 1, description: 'Nueva tarea asignada en Matemáticas', time: 'Hace 2 horas' },
-                            { id: 2, description: 'Calificación recibida en Base de Datos', time: 'Hace 1 día' },
+                            { id: 2, description: 'Nota recibida en Base de Datos', time: 'Hace 1 día' },
                             { id: 3, description: 'Nuevo anuncio del curso', time: 'Hace 2 días' }
                         ],
 
                         notificaciones: [
                             { id: 1, title: 'Tarea por vencer', message: 'Proyecto React vence en 3 días' },
-                            { id: 2, title: 'Nueva calificación', message: 'Calificación disponible en Base de Datos' }
+                            { id: 2, title: 'Nueva nota', message: 'Nota disponible en Base de Datos' }
                         ]
                     }
                 }
@@ -348,7 +348,7 @@
                             { title: 'Tareas Pendientes', value: this.mockData.tareas.filter(t => t.estado === 'Pendiente').length, icon: 'fas fa-tasks', color: 'text-yellow-500' },
                             { title: 'Actividad Hoy', value: '12', icon: 'fas fa-chart-line', color: 'text-purple-500' }
                         ];
-                    } else if (this.currentUser.rol === 'maestro') {
+                    } else if (this.currentUser.rol === 'profesor') {
                         return [
                             { title: 'Mis Cursos', value: this.userCourses.length, icon: 'fas fa-chalkboard-teacher', color: 'text-blue-500' },
                             { title: 'Estudiantes', value: this.userCourses.reduce((sum, curso) => sum + curso.estudiantes, 0), icon: 'fas fa-user-graduate', color: 'text-green-500' },
@@ -368,8 +368,8 @@
                 userCourses() {
                     if (!this.currentUser) return [];
                     
-                    if (this.currentUser.rol === 'maestro') {
-                        return this.mockData.cursos.filter(curso => curso.maestroId === this.currentUser.id);
+                    if (this.currentUser.rol === 'profesor') {
+                        return this.mockData.cursos.filter(curso => curso.profesorId === this.currentUser.id);
                     } else if (this.currentUser.rol === 'alumno') {
                         return this.mockData.cursos; // En un caso real, sería solo los cursos inscritos
                     }
@@ -382,7 +382,7 @@
                     
                     if (this.currentUser.rol === 'alumno') {
                         return this.mockData.tareas.filter(tarea => tarea.estudianteId === this.currentUser.id);
-                    } else if (this.currentUser.rol === 'maestro') {
+                    } else if (this.currentUser.rol === 'profesor') {
                         return this.mockData.tareas; // En un caso real, sería solo las tareas de sus cursos
                     }
                     
@@ -434,21 +434,21 @@
 
                 getTaskStatusClass(estado) {
                     const classes = {
-                        'Pendiente': 'bg-yellow-100 text-yellow-800',
-                        'En Progreso': 'bg-blue-100 text-blue-800',
-                        'Entregada': 'bg-green-100 text-green-800',
-                        'Vencida': 'bg-red-100 text-red-800'
+                        'Pendiente': 'bg-yellow-10 text-yellow-800',
+                        'En Progreso': 'bg-blue-10 text-blue-800',
+                        'Entregada': 'bg-green-10 text-green-800',
+                        'Vencida': 'bg-red-10 text-red-800'
                     };
-                    return classes[estado] || 'bg-gray-100 text-gray-800';
+                    return classes[estado] || 'bg-gray-10 text-gray-800';
                 },
 
                 getRoleClass(rol) {
                     const classes = {
-                        'administrador': 'bg-purple-100 text-purple-800',
-                        'maestro': 'bg-blue-100 text-blue-800',
-                        'alumno': 'bg-green-100 text-green-800'
+                        'administrador': 'bg-purple-10 text-purple-800',
+                        'profesor': 'bg-blue-10 text-blue-800',
+                        'alumno': 'bg-green-10 text-green-800'
                     };
-                    return classes[rol] || 'bg-gray-100 text-gray-800';
+                    return classes[rol] || 'bg-gray-10 text-gray-800';
                 },
 
                 showNotification(title, message, type = 'info') {

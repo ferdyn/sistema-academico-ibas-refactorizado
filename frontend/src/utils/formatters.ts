@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 /**
- * Formatea una fecha en formato legible en español
+ * Formatea una fecha en formato europeo (dd/MM/yyyy)
  */
 export const formatDate = (date: string | Date, formatStr: string = 'dd/MM/yyyy'): string => {
   try {
@@ -14,14 +14,14 @@ export const formatDate = (date: string | Date, formatStr: string = 'dd/MM/yyyy'
 };
 
 /**
- * Formatea fecha y hora completa
+ * Formatea fecha y hora completa en formato europeo
  */
 export const formatDateTime = (date: string | Date): string => {
   return formatDate(date, 'dd/MM/yyyy HH:mm');
 };
 
 /**
- * Formatea tiempo relativo (hace X días, etc.)
+ * Formatea tiempo relativo en español
  */
 export const formatRelativeTime = (date: string | Date): string => {
   try {
@@ -45,38 +45,67 @@ export const formatRelativeTime = (date: string | Date): string => {
 };
 
 /**
- * Formatea montos de dinero
+ * Formatea montos en euros (formato europeo)
  */
-export const formatCurrency = (amount: number, currency: string = 'USD'): string => {
-  return new Intl.NumberFormat('es-VE', {
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('es-ES', {
     style: 'currency',
-    currency,
+    currency: 'EUR',
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
 /**
- * Formatea números con separadores de miles
+ * Formatea euros sin símbolo
+ */
+export const formatEuros = (amount: number): string => {
+  return new Intl.NumberFormat('es-ES', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount) + ' €';
+};
+
+/**
+ * Formatea números con separadores europeos (punto para miles, coma para decimales)
  */
 export const formatNumber = (num: number): string => {
-  return new Intl.NumberFormat('es-VE').format(num);
+  return new Intl.NumberFormat('es-ES').format(num);
 };
 
 /**
- * Formatea calificaciones con color
+ * Formatea calificaciones europeas (0-10 escala)
  */
-export const formatGrade = (grade: number): { text: string; color: string } => {
-  if (grade >= 90) return { text: `${grade}%`, color: 'text-green-600' };
-  if (grade >= 80) return { text: `${grade}%`, color: 'text-blue-600' };
-  if (grade >= 70) return { text: `${grade}%`, color: 'text-yellow-600' };
-  if (grade >= 60) return { text: `${grade}%`, color: 'text-orange-600' };
-  return { text: `${grade}%`, color: 'text-red-600' };
+export const formatGrade = (grade: number): { text: string; color: string; description: string } => {
+  if (grade >= 9) return { 
+    text: `${grade.toFixed(1)}`, 
+    color: 'text-green-600', 
+    description: 'Sobresaliente' 
+  };
+  if (grade >= 7) return { 
+    text: `${grade.toFixed(1)}`, 
+    color: 'text-blue-600', 
+    description: 'Notable' 
+  };
+  if (grade >= 5) return { 
+    text: `${grade.toFixed(1)}`, 
+    color: 'text-yellow-600', 
+    description: 'Aprobado' 
+  };
+  return { 
+    text: `${grade.toFixed(1)}`, 
+    color: 'text-red-600', 
+    description: 'Suspenso' 
+  };
 };
 
 /**
- * Formatea nombres completos
+ * Formatea nombres completos (europeo: apellidos, nombre)
  */
-export const formatFullName = (firstName: string, lastName: string): string => {
+export const formatFullName = (firstName: string, lastName: string, european: boolean = false): string => {
+  if (european) {
+    return `${lastName}, ${firstName}`.trim();
+  }
   return `${firstName} ${lastName}`.trim();
 };
 
@@ -89,12 +118,51 @@ export const truncateText = (text: string, maxLength: number = 100): string => {
 };
 
 /**
- * Formatea tamaño de archivo
+ * Formatea tamaño de archivo (formato europeo)
  */
 export const formatFileSize = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   if (bytes === 0) return '0 Bytes';
   
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
+  const size = (bytes / Math.pow(1024, i)).toLocaleString('es-ES', {
+    minimumFractionDigits: i > 0 ? 1 : 0,
+    maximumFractionDigits: 2
+  });
+  return `${size} ${sizes[i]}`;
+};
+
+/**
+ * Formatea porcentajes
+ */
+export const formatPercentage = (value: number): string => {
+  return new Intl.NumberFormat('es-ES', {
+    style: 'percent',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 2
+  }).format(value / 100);
+};
+
+/**
+ * Formatea fechas para inputs de tipo date (yyyy-MM-dd)
+ */
+export const formatDateForInput = (date: string | Date): string => {
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return format(dateObj, 'yyyy-MM-dd');
+  } catch {
+    return '';
+  }
+};
+
+/**
+ * Convierte fecha de input a formato de visualización
+ */
+export const formatInputToDisplay = (dateString: string): string => {
+  try {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  } catch {
+    return dateString;
+  }
 };
